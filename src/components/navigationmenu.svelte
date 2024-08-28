@@ -1,4 +1,47 @@
 <script>
+    import { onMount } from "svelte";
+    import { createEventDispatcher } from "svelte";
+
+    export let menuItems = [];
+    export let logo = "";
+    export let responsive = true;
+    export let collapsible = false;
+    export let defaultOpen = false;
+    export let currentRoute = "/";
+
+    let isOpen = defaultOpen;
+    let isMobile = false;
+    let activeItem = null;
+
+    const dispatch = createEventDispatcher();
+
+    onMount(() => {
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    });
+
+    const handleResize = () => {
+        isMobile = window.innerWidth <= 768;
+        if (isMobile && !responsive) {
+            isOpen = false;
+        }
+    };
+
+    const toggleMenu = () => {
+        isOpen = !isOpen;
+    };
+
+    const handleItemClick = (item) => {
+        if (!item.subMenu) {
+            activeItem = item;
+            dispatch("navigate", { route: item.route });
+        }
+    };
+
+    const handleSubMenuToggle = (item) => {
+        item.isOpen = !item.isOpen;
+    };
 </script>
 
 <style>

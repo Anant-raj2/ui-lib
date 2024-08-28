@@ -1,4 +1,82 @@
 <script>
+    import { onMount } from "svelte";
+    import { createEventDispatcher } from "svelte";
+
+    export let items = []; // Array of items to display in the dropdown
+    export let placeholder = "Select an option";
+    export let multiSelect = false;
+    export let searchEnabled = false;
+    export let disabled = false;
+    export let icon = ""; // Optional icon for the dropdown
+    export let selectedItems = []; // Array of selected items (used for multi-select)
+
+    let isOpen = false;
+    let filteredItems = [];
+    let searchQuery = "";
+    let selectedItem = null;
+    let focusedIndex = -1;
+
+    const dispatch = createEventDispatcher();
+
+    const toggleDropdown = () => {
+        if (disabled) return;
+        isOpen = !isOpen;
+        if (isOpen) {
+            filteredItems = items;
+            focusedIndex = selectedItem ? items.indexOf(selectedItem) : -1;
+        }
+    };
+
+    const closeDropdown = () => {
+        isOpen = false;
+        focusedIndex = -1;
+    };
+
+    const handleItemClick = (item) => {
+        if (multiSelect) {
+            if (selectedItems.includes(item)) {
+                selectedItems = selectedItems.filter((i) => i !== item);
+            } else {
+                selectedItems = [...selectedItems, item];
+            }
+            dispatch("change", { selectedItems });
+        } else {
+            selectedItem = item;
+            closeDropdown();
+            dispatch("change", { selectedItem });
+        }
+    };
+
+    const handleSearch = (e) => {
+        searchQuery = e.target.value;
+        filteredItems = items.filter((item) =>
+            item.label.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        focusedIndex = filteredItems.length > 0 ? 0 : -1;
+    };
+
+    const handleKeydown = (e) => {
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            focusedIndex = Math.min(focusedIndex + 1, filteredItems.length - 1);
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            focusedIndex = Math.max(focusedIndex - 1, 0);
+        } else if (e.key === "Enter" && focusedIndex >= 0) {
+            e.preventDefault();
+            handleItemClick(filteredItems[focusedIndex]);
+        } else if (e.key === "Escape") {
+            closeDropdown();
+        }
+    };
+
+    onMount(() => {
+        if (selectedItems.length > 0 && multiSelect) {
+            selectedItems.forEach((item) => {
+                filteredItems = filteredItems.filter((i) => i !== item);
+            });
+        }
+    });
 </script>
 
 <style>
@@ -195,3 +273,4 @@
         </div>
     {/if}
 </div>
+v

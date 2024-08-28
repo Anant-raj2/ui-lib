@@ -8,6 +8,31 @@
   export let interval = 5000;
   export let transitionDuration = 500;
 
+  let currentIndex = 0;
+  let containerWidth;
+  let carousel;
+
+  const dispatch = createEventDispatcher();
+
+  const offset = tweened(0, {
+    duration: transitionDuration,
+    easing: cubicOut
+  });
+
+  $: {
+    offset.set(-currentIndex * containerWidth);
+  }
+
+  function nextSlide() {
+    currentIndex = (currentIndex + 1) % items.length;
+    dispatch('change', { index: currentIndex });
+  }
+
+  function prevSlide() {
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    dispatch('change', { index: currentIndex });
+  }
+
   function goToSlide(index) {
     currentIndex = index;
     dispatch('change', { index: currentIndex });
@@ -74,4 +99,54 @@
     height: auto;
   }
 
+  .caption {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  .carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+  }
+
+  .carousel-control.prev {
+    left: 10px;
+  }
+
+  .carousel-control.next {
+    right: 10px;
+  }
+
+  .carousel-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+  }
+
+  .indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+  }
+
+  .indicator.active {
+    background: white;
+  }
 </style>

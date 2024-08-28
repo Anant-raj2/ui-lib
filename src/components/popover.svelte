@@ -46,6 +46,58 @@
         }
     };
 
+    const handleTriggerHover = () => {
+        if (trigger === 'hover') {
+            showPopover();
+        }
+    };
+
+    const handleTriggerFocus = () => {
+        if (trigger === 'focus') {
+            showPopover();
+        }
+    };
+
+    const handleTriggerBlur = () => {
+        if (trigger === 'focus') {
+            hidePopover();
+        }
+    };
+
+    onMount(() => {
+        if (closeOnOutsideClick) {
+            document.addEventListener('click', handleDocumentClick);
+        }
+        if (closeOnEscape) {
+            document.addEventListener('keydown', handleEscapeKey);
+        }
+
+        tick().then(() => {
+            if (triggerElement) {
+                triggerElement.addEventListener('click', handleTriggerClick);
+                triggerElement.addEventListener('mouseenter', handleTriggerHover);
+                triggerElement.addEventListener('mouseleave', hidePopover);
+                triggerElement.addEventListener('focus', handleTriggerFocus);
+                triggerElement.addEventListener('blur', handleTriggerBlur);
+            }
+        });
+    });
+
+    onDestroy(() => {
+        if (closeOnOutsideClick) {
+            document.removeEventListener('click', handleDocumentClick);
+        }
+        if (closeOnEscape) {
+            document.removeEventListener('keydown', handleEscapeKey);
+        }
+        if (triggerElement) {
+            triggerElement.removeEventListener('click', handleTriggerClick);
+            triggerElement.removeEventListener('mouseenter', handleTriggerHover);
+            triggerElement.removeEventListener('mouseleave', hidePopover);
+            triggerElement.removeEventListener('focus', handleTriggerFocus);
+            triggerElement.removeEventListener('blur', handleTriggerBlur);
+        }
+    });
 </script>
 
 <style>

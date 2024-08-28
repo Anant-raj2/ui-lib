@@ -1,4 +1,66 @@
 <script>
+    import { onMount, onDestroy } from "svelte";
+
+    export let isOpen = false;
+    export let position = "left"; // Can be 'left', 'right', 'top', 'bottom'
+    export let size = "300px"; // Width or height depending on position
+    export let overlay = true; // Enable or disable background overlay
+    export let closeOnEsc = true; // Enable closing the drawer with ESC key
+    export let closeOnOutsideClick = true; // Enable closing the drawer when clicking outside
+
+    let drawerElement;
+
+    const openDrawer = () => {
+        if (drawerElement) {
+            drawerElement.style.transform = "translate(0, 0)";
+        }
+    };
+
+    const closeDrawer = () => {
+        if (drawerElement) {
+            if (position === "left") {
+                drawerElement.style.transform = `translateX(-100%)`;
+            } else if (position === "right") {
+                drawerElement.style.transform = `translateX(100%)`;
+            } else if (position === "top") {
+                drawerElement.style.transform = `translateY(-100%)`;
+            } else if (position === "bottom") {
+                drawerElement.style.transform = `translateY(100%)`;
+            }
+        }
+        isOpen = false;
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === "Escape" && closeOnEsc) {
+            closeDrawer();
+        }
+    };
+
+    const handleOutsideClick = (event) => {
+        if (drawerElement && !drawerElement.contains(event.target) && closeOnOutsideClick) {
+            closeDrawer();
+        }
+    };
+
+    onMount(() => {
+        if (isOpen) {
+            openDrawer();
+        }
+        document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("click", handleOutsideClick);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("click", handleOutsideClick);
+        };
+    });
+
+    $: if (isOpen) {
+        openDrawer();
+    } else {
+        closeDrawer();
+    }
 </script>
 
 <style>

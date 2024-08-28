@@ -1,4 +1,64 @@
 <script>
+    import { onMount } from "svelte";
+
+    // Utility functions
+    const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+    const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
+
+    let today = new Date();
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth();
+    let selectedDate = null;
+
+    let daysInMonth = getDaysInMonth(currentYear, currentMonth);
+    let firstDayOfMonth = getFirstDayOfMonth(currentYear, currentMonth);
+
+    let highlightedDates = [
+        { date: new Date(currentYear, currentMonth, 10), type: "holiday", label: "Holiday" },
+        { date: new Date(currentYear, currentMonth, 15), type: "event", label: "Event" },
+        { date: new Date(currentYear, currentMonth, 25), type: "birthday", label: "Birthday" },
+    ];
+
+    const nextMonth = () => {
+        if (currentMonth === 11) {
+            currentMonth = 0;
+            currentYear += 1;
+        } else {
+            currentMonth += 1;
+        }
+        updateCalendar();
+    };
+
+    const prevMonth = () => {
+        if (currentMonth === 0) {
+            currentMonth = 11;
+            currentYear -= 1;
+        } else {
+            currentMonth -= 1;
+        }
+        updateCalendar();
+    };
+
+    const updateCalendar = () => {
+        daysInMonth = getDaysInMonth(currentYear, currentMonth);
+        firstDayOfMonth = getFirstDayOfMonth(currentYear, currentMonth);
+    };
+
+    const selectDate = (day) => {
+        selectedDate = new Date(currentYear, currentMonth, day);
+    };
+
+    onMount(() => {
+        updateCalendar();
+    });
+
+    const isHighlighted = (day) => {
+        return highlightedDates.find(
+            (dateObj) => dateObj.date.getFullYear() === currentYear &&
+            dateObj.date.getMonth() === currentMonth &&
+            dateObj.date.getDate() === day
+        );
+    };
 </script>
 
 <style>

@@ -96,6 +96,39 @@
         cursor: not-allowed;
     }
 
+    .dropdown-search {
+        padding: 10px 15px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .dropdown-search input {
+        width: 100%;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .selected-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 5px;
+    }
+
+    .selected-item {
+        background-color: #007BFF;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+    }
+
+    .selected-item .remove-btn {
+        margin-left: 5px;
+        cursor: pointer;
+    }
 </style>
 
 <div class="dropdown-container" on:keydown={handleKeydown}>
@@ -146,4 +179,19 @@
         {/each}
     </div>
 
+    {#if multiSelect && selectedItems.length > 0}
+        <div class="selected-items">
+            {#each selectedItems as item}
+                <div class="selected-item">
+                    {item.label}
+                    <span
+                        class="remove-btn"
+                        on:click={() => handleItemClick(item)}
+                    >
+                        &times;
+                    </span>
+                </div>
+            {/each}
+        </div>
+    {/if}
 </div>
